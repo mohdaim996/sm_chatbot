@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-
-
+import 'tts.dart' as TTS;
 
 class MyApp extends StatefulWidget {
   @override
@@ -223,6 +222,7 @@ class _MyAppState extends State<MyApp> {
 
   void stopListening() {
     speech.stop();
+
     setState(() {
       level = 0.0;
     });
@@ -238,8 +238,14 @@ class _MyAppState extends State<MyApp> {
   void resultListener(SpeechRecognitionResult result) {
     ++resultListened;
     print('Result listener $resultListened');
+
     setState(() {
       lastWords = '${result.recognizedWords} - ${result.finalResult}';
+    });
+    stopListening();
+    Timer(Duration(seconds:2), () {
+      TTS.TTS.done = true;
+      new TTS.TTS(lastWords);
     });
   }
 
