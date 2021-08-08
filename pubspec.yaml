@@ -31,6 +31,7 @@ dependencies:
   watson_assistant_v2: ^0.0.1
   speech_to_text: ^4.2.2
   flutter_tts: ^3.2.2
+  ibm_watson_assistant: ^1.2.0
 
 dev_dependencies:
   flutter_test:

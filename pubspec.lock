@@ -50,6 +50,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -93,6 +100,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  ibm_watson_assistant:
+    dependency: "direct main"
+    description:
+      name: ibm_watson_assistant
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   js:
     dependency: transitive
     description:

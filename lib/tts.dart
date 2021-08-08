@@ -9,7 +9,6 @@ class TTS {
   }
   FlutterTts flutterTts = FlutterTts();
   Future _speak(String text) async {
-    
     await flutterTts.setLanguage("ar");
 
     await flutterTts.setSpeechRate(0.5);
@@ -18,8 +17,8 @@ class TTS {
 
     await flutterTts.setPitch(1.0);
     if (TTS.done) {
-      await flutterTts.speak(text);
       TTS.done = false;
+      await flutterTts.speak(text);
     }
   }
 }

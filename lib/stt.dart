@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'watson.dart' as Bot;
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -20,14 +20,14 @@ class _MyAppState extends State<MyApp> {
   String lastWords = '';
   String lastError = '';
   String lastStatus = '';
-  String _currentLocaleId = '';
   int resultListened = 0;
-  List<LocaleName> _localeNames = [];
+
   final SpeechToText speech = SpeechToText();
 
   @override
   void initState() {
     super.initState();
+    initSpeechState();
   }
 
   Future<void> initSpeechState() async {
@@ -36,12 +36,6 @@ class _MyAppState extends State<MyApp> {
         onStatus: statusListener,
         debugLogging: true,
         finalTimeout: Duration(milliseconds: 0));
-    if (hasSpeech) {
-      _localeNames = await speech.locales();
-
-      var systemLocale = await speech.systemLocale();
-      _currentLocaleId = systemLocale?.localeId ?? '';
-    }
 
     if (!mounted) return;
 
@@ -55,7 +49,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Speech to Text Example'),
+          title: const Text('Smart Methods Chat Bot'),
         ),
         body: Column(children: [
           Center(
@@ -67,15 +61,6 @@ class _MyAppState extends State<MyApp> {
           Container(
             child: Column(
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    TextButton(
-                      onPressed: _hasSpeech ? null : initSpeechState,
-                      child: Text('Initialize'),
-                    ),
-                  ],
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -95,23 +80,6 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    DropdownButton(
-                      onChanged: (selectedVal) => _switchLang(selectedVal),
-                      value: _currentLocaleId,
-                      items: _localeNames
-                          .map(
-                            (localeName) => DropdownMenuItem(
-                              value: localeName.localeId,
-                              child: Text(localeName.name),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
@@ -213,7 +181,7 @@ class _MyAppState extends State<MyApp> {
         listenFor: Duration(seconds: 30),
         pauseFor: Duration(seconds: 5),
         partialResults: true,
-        localeId: _currentLocaleId,
+        localeId: "ar_SA",
         onSoundLevelChange: soundLevelListener,
         cancelOnError: true,
         listenMode: ListenMode.confirmation);
@@ -236,16 +204,25 @@ class _MyAppState extends State<MyApp> {
   }
 
   void resultListener(SpeechRecognitionResult result) {
+    String res = '';
     ++resultListened;
     print('Result listener $resultListened');
-
+    res = result.recognizedWords;
     setState(() {
       lastWords = '${result.recognizedWords} - ${result.finalResult}';
     });
     stopListening();
-    Timer(Duration(seconds:2), () {
-      TTS.TTS.done = true;
-      new TTS.TTS(lastWords);
+    Timer(Duration(seconds: 2), () async {
+      if (res != "") {
+        String response = ((await new Bot.Watson().send(res))
+                ?.output
+                ?.generic
+                ?.first
+                ?.text) ??
+            "اعد المحاولة";
+        TTS.TTS.done = true;
+        new TTS.TTS(response);
+      }
     });
   }
 
@@ -271,12 +248,5 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       lastStatus = '$status';
     });
-  }
-
-  void _switchLang(selectedVal) {
-    setState(() {
-      _currentLocaleId = selectedVal;
-    });
-    print(selectedVal);
   }
 }
