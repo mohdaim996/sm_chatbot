@@ -23,11 +23,20 @@ class _MyAppState extends State<MyApp> {
   int resultListened = 0;
 
   final SpeechToText speech = SpeechToText();
-
+  bool speaking = false;
   @override
   void initState() {
     super.initState();
     initSpeechState();
+  }
+
+  void imgState() {
+    setState(() {
+      speaking = !speaking;
+      if (speaking) {
+        Timer(Duration(milliseconds: 3000), imgState);
+      }
+    });
   }
 
   Future<void> initSpeechState() async {
@@ -99,10 +108,9 @@ class _MyAppState extends State<MyApp> {
                       Container(
                         color: Theme.of(context).selectedRowColor,
                         child: Center(
-                          child: Text(
-                            lastWords,
-                            textAlign: TextAlign.center,
-                          ),
+                          child: Image.asset(!speaking
+                              ? "Assets/still.png"
+                              : "Assets/talking.gif"),
                         ),
                       ),
                       Positioned.fill(
@@ -220,6 +228,7 @@ class _MyAppState extends State<MyApp> {
                 ?.first
                 ?.text) ??
             "اعد المحاولة";
+        imgState();
         TTS.TTS.done = true;
         new TTS.TTS(response);
       }

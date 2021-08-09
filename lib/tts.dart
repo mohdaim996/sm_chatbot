@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class TTS {
-  static bool done = true;
+  static bool done = false;
   TTS(String text) {
     this._speak(text);
   }
@@ -16,9 +16,9 @@ class TTS {
     await flutterTts.setVolume(1.0);
 
     await flutterTts.setPitch(1.0);
-    if (TTS.done) {
-      TTS.done = false;
+    if (TTS.done) {     
       await flutterTts.speak(text);
+      TTS.done = false;
     }
   }
 }
